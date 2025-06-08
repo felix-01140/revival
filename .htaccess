@@ -62,4 +62,31 @@ Options -Indexes
 <FilesMatch "^(\.htaccess|\.htpasswd|\.git|\.env|composer\.json|composer\.lock|package\.json|package-lock\.json)$">
     Order Allow,Deny
     Deny from all
+</FilesMatch>
+
+# Enable case-insensitive URLs
+Options +MultiViews
+
+# Redirect to lowercase URLs
+RewriteCond %{REQUEST_URI} [A-Z]
+RewriteRule (.*) ${lc:$1} [R=301,L]
+
+# Handle index files
+DirectoryIndex index.html
+DirectoryIndex index.htm
+DirectoryIndex index.php
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# Enable CORS
+Header set Access-Control-Allow-Origin "*"
+
+# Cache control
+<FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "max-age=0, must-revalidate"
+</FilesMatch>
+
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico)$">
+    Header set Cache-Control "max-age=31536000, public"
 </FilesMatch> 
