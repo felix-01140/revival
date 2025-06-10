@@ -213,6 +213,6 @@ images/
 
 ## Support
 For assistance with image management:
-- Website Administrator: [Contact Information]
-- Technical Support: [Contact Information]
-- Graphic Designer: [Contact Information] 
+- Website Administrator: urumeneshaa@gmail.com
+- Technical Support: urumeneshaa@gmail.com
+- Graphic Designer: urumeneshaa@gmail.com

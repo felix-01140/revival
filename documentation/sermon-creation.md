@@ -185,5 +185,5 @@ Example:
 
 ## Support
 For technical support or questions about managing sermons, contact:
-- Website Administrator: [Contact Information]
-- Technical Support: [Contact Information] 
+- Website Administrator: urumeneshaa@gmail.com
+- Technical Support: urumeneshaa@gmail.com

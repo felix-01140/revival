@@ -182,5 +182,5 @@ Current event categories include:
 
 ## Support
 For technical support or questions about managing events, contact:
-- Website Administrator: [Contact Information]
-- Technical Support: [Contact Information] 
+- Website Administrator: urumeneshaa@gmail.com
+- Technical Support: urumeneshaa@gmail.com

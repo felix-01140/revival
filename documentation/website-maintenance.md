@@ -182,9 +182,9 @@ Key sections to maintain:
 
 ## Support
 For technical support or questions about website maintenance:
-- Website Administrator: [Contact Information]
-- Technical Support: [Contact Information]
-- Emergency Contact: [Contact Information]
+- Website Administrator: urumeneshaa@gmail.com
+- Technical Support: urumeneshaa@gmail.com
+- Emergency Contact: urumeneshaa@gmail.com
 
 ## Emergency Procedures
 1. Website Down
