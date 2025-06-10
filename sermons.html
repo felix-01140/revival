@@ -307,10 +307,21 @@
                 const searchInput = document.getElementById('sermonSearch');
                 const searchButton = document.getElementById('searchButton');
                 const sermonItems = document.querySelectorAll('.sermon-item');
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                let debounceTimer;
 
                 function performSearch() {
                     const searchTerm = searchInput.value.toLowerCase().trim();
+                    let hasVisibleResults = false;
+                    let hasHiddenResults = false;
                     
+                    // First, show all sermons (both visible and hidden) for searching
+                    sermonItems.forEach(item => {
+                        item.classList.remove('d-none'); // Remove any d-none classes
+                        item.style.display = ''; // Reset display style
+                    });
+                    
+                    // Then perform the search
                     sermonItems.forEach(item => {
                         const title = item.querySelector('.sermon-title').textContent.toLowerCase();
                         const pastor = item.querySelector('.sermon-pastor').textContent.toLowerCase();
@@ -319,11 +330,49 @@
                         if (title.includes(searchTerm) || 
                             pastor.includes(searchTerm) || 
                             description.includes(searchTerm)) {
+                            // Show the sermon
                             item.style.display = '';
+                            // Track if this is a hidden sermon that matched
+                            if (item.classList.contains('hidden-sermon')) {
+                                hasHiddenResults = true;
+                            } else {
+                                hasVisibleResults = true;
+                            }
                         } else {
+                            // Hide the sermon if it doesn't match
                             item.style.display = 'none';
                         }
                     });
+
+                    // Show/hide load more button based on search state
+                    if (searchTerm === '') {
+                        // If no search term, show load more button only if there are hidden sermons
+                        loadMoreBtn.style.display = document.querySelectorAll('.hidden-sermon').length > 0 ? 'inline-block' : 'none';
+                    } else {
+                        // If searching, show load more button only if there are hidden results
+                        loadMoreBtn.style.display = hasHiddenResults ? 'inline-block' : 'none';
+                    }
+
+                    // If no results found, show a message
+                    if (!hasVisibleResults && !hasHiddenResults) {
+                        const noResultsMsg = document.getElementById('noResultsMessage') || createNoResultsMessage();
+                        noResultsMsg.style.display = 'block';
+                    } else {
+                        const noResultsMsg = document.getElementById('noResultsMessage');
+                        if (noResultsMsg) {
+                            noResultsMsg.style.display = 'none';
+                        }
+                    }
+                }
+
+                function createNoResultsMessage() {
+                    const message = document.createElement('div');
+                    message.id = 'noResultsMessage';
+                    message.className = 'alert alert-info text-center mt-4';
+                    message.style.display = 'none';
+                    message.innerHTML = 'No sermons found matching your search.';
+                    document.querySelector('.sermon-section .container').appendChild(message);
+                    return message;
                 }
 
                 // Search on button click
@@ -337,10 +386,63 @@
                 });
 
                 // Search as you type (with debounce)
-                let debounceTimer;
                 searchInput.addEventListener('input', function() {
                     clearTimeout(debounceTimer);
                     debounceTimer = setTimeout(performSearch, 300);
+                });
+
+                // Load More functionality
+                let currentIndex = 0;
+                const sermonsPerLoad = 3;
+                const hiddenSermons = document.querySelectorAll('.hidden-sermon');
+
+                // Initially hide all hidden sermons
+                hiddenSermons.forEach(sermon => {
+                    sermon.style.display = 'none';
+                });
+
+                loadMoreBtn.addEventListener('click', function() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    
+                    // Show next set of sermons
+                    for (let i = 0; i < sermonsPerLoad; i++) {
+                        if (currentIndex < hiddenSermons.length) {
+                            const sermon = hiddenSermons[currentIndex];
+                            // Only show if it matches the search term (if any)
+                            if (searchTerm === '') {
+                                sermon.style.display = 'block';
+                            } else {
+                                const title = sermon.querySelector('.sermon-title').textContent.toLowerCase();
+                                const pastor = sermon.querySelector('.sermon-pastor').textContent.toLowerCase();
+                                const description = sermon.querySelector('.sermon-description').textContent.toLowerCase();
+                                
+                                if (title.includes(searchTerm) || 
+                                    pastor.includes(searchTerm) || 
+                                    description.includes(searchTerm)) {
+                                    sermon.style.display = 'block';
+                                }
+                            }
+                            currentIndex++;
+                        }
+                    }
+
+                    // Hide button if no more sermons to load
+                    if (currentIndex >= hiddenSermons.length) {
+                        loadMoreBtn.style.display = 'none';
+                    }
+                });
+
+                // Reset search and load more state when search input is cleared
+                searchInput.addEventListener('input', function() {
+                    if (this.value === '') {
+                        currentIndex = 0;
+                        // Reset hidden sermons display
+                        hiddenSermons.forEach(sermon => {
+                            sermon.style.display = 'none';
+                        });
+                        // Show load more button if there are hidden sermons
+                        loadMoreBtn.style.display = hiddenSermons.length > 0 ? 'inline-block' : 'none';
+                    }
                 });
             });
         </script>
@@ -382,94 +484,13 @@
             .search-container .bi-search {
                 font-size: 1.2rem;
             }
-        </style>
 
-        <!-- Add this before the closing body tag -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const loadMoreBtn = document.getElementById('loadMoreBtn');
-                const hiddenSermons = document.querySelectorAll('.hidden-sermon');
-                let currentIndex = 0;
-                const sermonsPerLoad = 3;
-
-                // Initially hide all hidden sermons
-                hiddenSermons.forEach(sermon => {
-                    sermon.style.display = 'none';
-                });
-
-                // Show/hide load more button based on hidden sermons
-                loadMoreBtn.style.display = hiddenSermons.length > 0 ? 'inline-block' : 'none';
-
-                loadMoreBtn.addEventListener('click', function() {
-                    // Show next set of sermons
-                    for (let i = 0; i < sermonsPerLoad; i++) {
-                        if (currentIndex < hiddenSermons.length) {
-                            hiddenSermons[currentIndex].style.display = 'block';
-                            currentIndex++;
-                        }
-                    }
-
-                    // Hide button if no more sermons to load
-                    if (currentIndex >= hiddenSermons.length) {
-                        loadMoreBtn.style.display = 'none';
-                    }
-                });
-
-                // Update search functionality to work with hidden sermons
-                const searchInput = document.getElementById('sermonSearch');
-                const searchButton = document.getElementById('searchButton');
-                const allSermonItems = document.querySelectorAll('.sermon-item');
-
-                function performSearch() {
-                    const searchTerm = searchInput.value.toLowerCase().trim();
-                    let visibleCount = 0;
-                    
-                    allSermonItems.forEach(item => {
-                        const title = item.querySelector('.sermon-title').textContent.toLowerCase();
-                        const pastor = item.querySelector('.sermon-pastor').textContent.toLowerCase();
-                        const description = item.querySelector('.sermon-description').textContent.toLowerCase();
-                        
-                        if (title.includes(searchTerm) || 
-                            pastor.includes(searchTerm) || 
-                            description.includes(searchTerm)) {
-                            item.style.display = '';
-                            visibleCount++;
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-
-                    // Show/hide load more button based on search results
-                    loadMoreBtn.style.display = 
-                        (searchTerm === '' && currentIndex < hiddenSermons.length) ? 'inline-block' : 'none';
-                }
-
-                // Existing search event listeners
-                searchButton.addEventListener('click', performSearch);
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        performSearch();
-                    }
-                });
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(performSearch, 300);
-                });
-            });
-        </script>
-
-        <style>
-            .hidden-sermon {
-                display: none;
-            }
-
-            #loadMoreBtn {
-                transition: all 0.3s ease;
-            }
-
-            #loadMoreBtn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            #noResultsMessage {
+                margin-top: 2rem;
+                padding: 1rem;
+                border-radius: 8px;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
             }
         </style>
     </body>
