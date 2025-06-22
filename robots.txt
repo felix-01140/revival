@@ -1,0 +1,23 @@
+# robots.txt for Revival Palace Church
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /about.html
+Allow: /events.html
+Allow: /event-detail.html
+Allow: /faq.html
+Allow: /contact.html
+Allow: /sign-in.html
+Allow: /sign-up.html
+
+# Allow crawling of assets
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /fonts/
+
+# Sitemap location
+Sitemap: https://revival-a2r.pages.dev/sitemap.xml
+
+# Crawl delay to prevent server overload
+Crawl-delay: 10 
